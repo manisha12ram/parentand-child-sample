@@ -1,20 +1,138 @@
-<!-- app.component.html -->
+<!-- <div class="jumbotron text-center">
+  <h1 class="display-5">
+    Angular 7 Reactive Forms Tutorial
+  </h1>
+</div> -->
 
 <div class="container">
+  <div class="column">
 
-  <h1>Angular Google Maps with Places Search Example</h1>
+      <!-- Form starts -->
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" style="width: 100%;">
 
-  <div class="form-group">
-    <label>Enter address</label>
-    <input type="text" class="form-control" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
+          <!-- Full name -->
+          <div class="row" style="width: 100%; display: flex;">
+            <div class="col-md-4">
+              <!-- [ngClass]="{'error': submitted && myForm.fullName.controls.firstName.errors}" -->
+              <label >
+                First name</label>
+                <!-- [ngClass]="{'error': submitted && myForm.fullName.controls.firstName.errors}" -->
+              <input type="text" class="form-control" formControlName="firstName" >
+              <!-- error block -->
+              <!-- <div class="invalid-feedback" *ngIf="submitted && myForm.fullName.controls.firstName.errors?.required">
+                <sup>*</sup>Enter your name
+              </div>
+              <div class="invalid-feedback" *ngIf="submitted && myForm.fullName.controls.firstName.errors?.minlength">
+                <sup>*</sup>Name must be 2 characters long
+              </div>
+              <div class="invalid-feedback" *ngIf="submitted && myForm.fullName.controls.firstName.errors?.pattern">
+                <sup>*</sup>No special charcter allowed
+              </div> -->
+            </div>
+
+            <div class="col-md-4">
+              <!-- [ngClass]="{'error': submitted && myForm.fullName.controls.lastName.errors}" -->
+              <label >
+                Last name</label>
+                <!-- [ngClass]="{'error': submitted && myForm.fullName.controls.lastName.errors}" -->
+              <input type="text" class="form-control" formControlName="lastName" >
+              <!-- error block -->
+              <!-- <div class="invalid-feedback" *ngIf="submitted && myForm.fullName.controls.lastName.errors?.required">
+                <sup>*</sup>Please enter your surname
+              </div> -->
+            </div>
+
+            <div class="col-md-4">
+              <label [ngClass]="{'error': submitted && myForm.phoneNumber.errors}">Phone Number</label>
+              <input type="text" class="form-control" formControlName="phoneNumber" [ngClass]="{'error': submitted && myForm.phoneNumber.errors}">
+  
+              <!-- error block -->
+              <!-- <div class="invalid-feedback" *ngIf="submitted && myForm.phoneNumber.errors?.maxLength">
+                <sup>*</sup>Phone number must be 10 digit long
+              </div>
+              <div class="invalid-feedback" *ngIf="submitted && myForm.phoneNumber.errors?.required">
+                <sup>*</sup>Please enter your phone number
+              </div>
+              <div class="invalid-feedback" *ngIf="submitted && myForm.phoneNumber.errors?.pattern">
+                <sup>*</sup>Please enter valid phone number
+              </div> -->
+            <!-- </div>  -->
+          </div>
+          <div>
+
+          </div>
+          </div>
+          <div class="row" style="width: 100%; display: flex;">
+            <div class="col-md-4">
+              <label [ngClass]="{'error': submitted && myForm.email.errors}">Email</label>
+              <input type="email" class="form-control" formControlName="email" [ngClass]="{'error': submitted && myForm.email.errors}">
+  
+              <!-- error block -->
+              <div class="invalid-feedback" *ngIf="submitted && myForm.email.errors?.required">
+                <sup>*</sup>Please enter your email
+              </div>
+              <div class="invalid-feedback" *ngIf="submitted && myForm.email.errors?.pattern">
+                <sup>*</sup>Please enter valid email
+              </div>
+            </div>
+            </div>
+            <!-- Address -->
+            <h5 class="mb-3">Address</h5>
+        <div formGroupName="address" class="row" style="width: 100%; display: flex;">
+          
+          <div class="col-md-4">
+            <label [ngClass]="{'error': submitted && addressForm.street.errors}">Street</label>
+            <input type="text" class="form-control" formControlName="street" 
+            [ngClass]="{'error': submitted && addressForm.street.errors}">
+
+             
+            <div class="invalid-feedback" *ngIf="submitted && addressForm.street.errors?.required">
+              <sup>*</sup>Please enter your street
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label [ngClass]="{'error': submitted && addressForm.city.errors}">City</label>
+            <input type="text" class="form-control" formControlName="city" [ngClass]="{'error': submitted && addressForm.city.errors}">
+
+            
+            <div class="invalid-feedback" *ngIf="submitted && addressForm.city.errors?.required">
+              <sup>*</sup>Please enter your street
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label [ngClass]="{'error': submitted && addressForm.cityName.errors}">State</label>
+            <select class="custom-select d-block w-100" (change)="changeCity($event)" formControlName="cityName"
+              [ngClass]="{'error': submitted && addressForm.cityName.errors}">
+              <option value="">Choose...</option>
+              <option *ngFor="let city of City" [ngValue]="city">{{city}}</option>
+            </select>
+
+           
+            <div class="invalid-feedback" *ngIf="submitted && addressForm.cityName.errors?.required">
+              <sup>*</sup>Please enter your city name
+            </div>
+          </div>
+        </div>
+        
+        <div class="row" style="width: 100%; display: flex;">
+          <div class="col-md-4" >
+            
+  
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-danger btn-lg btn-block" style="margin-top: 5%;">Submit</button>
+          </div>
+         
+        </div>
+      </form><!-- Form ends -->
+
+    
   </div>
-
-  <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
-    <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true"
-      (dragEnd)="markerDragEnd($event)"></agm-marker>
-  </agm-map>
-
-  <h5>Address: {{address}}</h5>
-  <div>Latitude: {{latitude}}</div>
-  <div>Longitude: {{longitude}}</div>
 </div>
+
+<app-table></app-table>
+
+
+
+

@@ -1,7 +1,9 @@
 //app.component.ts
 
-import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MapsAPILoader } from '@agm/core';
+import { FormArray, FormBuilder, Validators } from '@angular/forms';
+import { ValidatePassword } from './must-match/validate-password';
 
 @Component({
   selector: 'app-root',
@@ -9,85 +11,85 @@ import { MapsAPILoader } from '@agm/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title: string = 'AGM project';
-  latitude: number;
-  longitude: number;
-  zoom: number;
-  address: string;
-  private geoCoder;
 
-  @ViewChild('search')
-  public searchElementRef: ElementRef;
+  registrationForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[_A-z0-9]*((-|\s)*[_A-z0-9])*$')]],
+      lastName: ['', [Validators.required]],
+    // }),
+    email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
+    phoneNumber: ['', [Validators.required, Validators.maxLength(10), Validators.pattern('^[0-9]+$')]],
+    address: this.fb.group({
+      street: ['', [Validators.required]],
+      city: ['', [Validators.required]],
+      cityName: ['', [Validators.required]]
+    }),
+    gender: ['male'],
+    PasswordValidation: this.fb.group({
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required]
+    }, {
+      validator: ValidatePassword.MatchPassword // your validation method
+    }
+    ),
+    addDynamicElement: this.fb.array([])
+  })
+
+  /*########################## File Upload ########################*/
+  // @ViewChild('fileInput') el: ElementRef;
+  // imageUrl: any = 'https://i.pinimg.com/236x/d6/27/d9/d627d9cda385317de4812a4f7bd922e9--man--iron-man.jpg';
+  // editFile: boolean = true;
+  // removeUpload: boolean = false;
 
 
+
+  submitted = false;
+
+  // City names
+  City: any = ['Florida', 'South Dakota', 'Tennessee', 'Michigan']
   constructor(
-    private mapsAPILoader: MapsAPILoader,
-    private ngZone: NgZone
+    public fb: FormBuilder,
+    private cd: ChangeDetectorRef
   ) { }
 
+ngOnInit(): void {
+    console.log(this.registrationForm)
+}
 
-  ngOnInit() {
-    //load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      this.setCurrentLocation();
-      this.geoCoder = new google.maps.Geocoder;
 
-      let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement);
-      autocomplete.addListener("place_changed", () => {
-        this.ngZone.run(() => {
-          //get the place result
-          let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-          //verify result
-          if (place.geometry === undefined || place.geometry === null) {
-            return;
-          }
-
-          //set latitude, longitude and zoom
-          this.latitude = place.geometry.location.lat();
-          this.longitude = place.geometry.location.lng();
-          this.zoom = 12;
-        });
-      });
-    });
+  // Getter method to access formcontrols
+  get myForm() {
+    return this.registrationForm.controls;
+  }
+  get addressForm(){
+    return this.myForm.address['controls'];
   }
 
-  // Get Current Location Coordinates
-  private setCurrentLocation() {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
-        this.zoom = 8;
-        this.getAddress(this.latitude, this.longitude);
-      });
+  // Choose city using select dropdown
+  changeCity(e) {
+    this.registrationForm.get('address.cityName').setValue(e.target.value, {
+      onlySelf: true
+    })
+  }
+
+  /*############### Add Dynamic Elements ###############*/
+  get addDynamicElement() {
+    return this.registrationForm.get('addDynamicElement') as FormArray
+  }
+
+  // addSuperPowers() {
+  //   this.addDynamicElement.push(this.fb.control(''))
+  // }
+
+  // Submit Registration Form
+  onSubmit() {
+    this.submitted = true;
+    if (!this.registrationForm.valid) {
+      alert('Please fill all the required fields to create a super hero!')
+      return false;
+    } else {
+      console.log(this.registrationForm.value)
     }
   }
 
-
-  markerDragEnd($event: google.maps.MapMouseEvent) {
-    console.log($event);
-    // this.latitude = $event.coords.lat;
-    // this.longitude = $event.coords.lng;
-    this.getAddress(this.latitude, this.longitude);
-  }
-
-  getAddress(latitude, longitude) {
-    this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
-      console.log(results);
-      console.log(status);
-      if (status === 'OK') {
-        if (results[0]) {
-          this.zoom = 12;
-          this.address = results[0].formatted_address;
-        } else {
-          window.alert('No results found');
-        }
-      } else {
-        window.alert('Geocoder failed due to: ' + status);
-      }
-
-    });
-  }
 
 }
